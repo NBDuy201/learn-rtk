@@ -8,7 +8,7 @@ export const blogApi = createApi({
     getPosts: builder.query<IPost[], void>({
       query: () => `posts`
     }),
-    addPosts: builder.query<IPost, Omit<IPost, 'id'>>({
+    addPosts: builder.mutation<IPost, Omit<IPost, 'id'>>({
       query: (body) => ({
         url: 'posts',
         method: 'POST',
@@ -18,4 +18,4 @@ export const blogApi = createApi({
   })
 })
 
-export const { useGetPostsQuery, useAddPostsQuery } = blogApi
+export const { useGetPostsQuery, useAddPostsMutation } = blogApi

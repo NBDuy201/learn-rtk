@@ -1,16 +1,51 @@
+import React, { ChangeEvent, FormEvent, useState } from 'react'
+import { useAddPostsMutation } from 'service/blog.service'
+import { IPost } from 'types/blog.type'
+
+const initData: Omit<IPost, 'id'> = {
+  description: '',
+  featuredImage: '',
+  publishDate: '',
+  published: false,
+  title: ''
+}
+
 export default function CreatePost() {
+  const [formData, setFormData] = useState(initData)
+
+  const [addPost] = useAddPostsMutation()
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const res = await addPost(formData).unwrap()
+    setFormData(initData)
+    console.log('🚀 ~ file: CreatePost.tsx:21 ~ onSubmit ~ res:', res)
+  }
+
+  function onFieldChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    let element = e.target
+
+    if (element.type !== 'checkbox') {
+      setFormData((prv) => ({ ...prv, [element.name]: element.value.trim() })) // Not checkbox
+    } else {
+      setFormData((prv) => ({ ...prv, [element.name]: (element as HTMLInputElement).checked })) // Is checkbox
+    }
+  }
+
   return (
-    <form>
+    <form onSubmit={onSubmit}>
       <div className='mb-6'>
         <label htmlFor='title' className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
           Title
         </label>
         <input
           type='text'
-          id='title'
+          name='title'
           className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
           placeholder='Title'
           required
+          onChange={onFieldChange}
+          value={formData.title}
         />
       </div>
       <div className='mb-6'>
@@ -19,10 +54,12 @@ export default function CreatePost() {
         </label>
         <input
           type='text'
-          id='featuredImage'
+          name='featuredImage'
           className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
           placeholder='Url image'
           required
+          onChange={onFieldChange}
+          value={formData.featuredImage}
         />
       </div>
       <div className='mb-6'>
@@ -31,11 +68,13 @@ export default function CreatePost() {
             Description
           </label>
           <textarea
-            id='description'
+            name='description'
             rows={3}
             className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
             placeholder='Your description...'
             required
+            onChange={onFieldChange}
+            value={formData.description}
           />
         </div>
       </div>
@@ -45,15 +84,24 @@ export default function CreatePost() {
         </label>
         <input
           type='datetime-local'
-          id='publishDate'
+          name='publishDate'
           className='block w-56 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
-          placeholder='Title'
+          placeholder='publishDate'
           required
+          onChange={onFieldChange}
+          value={formData.publishDate}
         />
       </div>
       <div className='mb-6 flex items-center'>
-        <input id='publish' type='checkbox' className='h-4 w-4 focus:ring-2 focus:ring-blue-500' />
-        <label htmlFor='publish' className='ml-2 text-sm font-medium text-gray-900'>
+        <input
+          id='published'
+          name='published'
+          type='checkbox'
+          className='h-4 w-4 focus:ring-2 focus:ring-blue-500'
+          onChange={onFieldChange}
+          checked={formData.published}
+        />
+        <label htmlFor='published' className='ml-2 text-sm font-medium text-gray-900'>
           Publish
         </label>
       </div>
@@ -66,22 +114,26 @@ export default function CreatePost() {
             Publish Post
           </span>
         </button>
-        <button
+
+        {/* Update */}
+        {/* <button
           type='submit'
           className='group relative mb-2 mr-2 inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-teal-300 to-lime-300 p-0.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-4 focus:ring-lime-200 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 dark:focus:ring-lime-800'
         >
           <span className='relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900'>
             Update Post
           </span>
-        </button>
-        <button
+        </button> */}
+
+        {/* Cancel */}
+        {/* <button
           type='reset'
           className='group relative mb-2 mr-2 inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-red-200 via-red-300 to-yellow-200 p-0.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-4 focus:ring-red-100 group-hover:from-red-200 group-hover:via-red-300 group-hover:to-yellow-200 dark:text-white dark:hover:text-gray-900 dark:focus:ring-red-400'
         >
           <span className='relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900'>
             Cancel
           </span>
-        </button>
+        </button> */}
       </div>
     </form>
   )

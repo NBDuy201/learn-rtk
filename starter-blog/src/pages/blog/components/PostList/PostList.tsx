@@ -4,7 +4,7 @@ import SkeletonPost from '../SkeletonPost'
 
 function PostList() {
   const { data, isFetching } = useGetPostsQuery()
-  console.log('🚀 ~ file: PostList.tsx:6 ~ PostList ~ data:', data, isFetching)
+  // console.log('🚀 ~ file: PostList.tsx:6 ~ PostList ~ data:', data, isFetching)
 
   return (
     <div className='bg-white py-6 sm:py-8 lg:py-12'>
