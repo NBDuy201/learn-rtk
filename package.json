@@ -1,0 +1,14 @@
+{
+  "name": "learn-rtk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "startBE": "cd server && npm run start",
+    "startFE": "cd starter-blog && npm run start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
