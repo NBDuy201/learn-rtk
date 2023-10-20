@@ -10,6 +10,17 @@ const initData: Omit<IPost, 'id'> = {
   title: ''
 }
 
+function trimmedFormData<T>(obj: T) {
+  let trimmedForm = { ...obj }
+  for (const key in obj) {
+    trimmedForm[key] = (
+      typeof trimmedForm[key] === 'string' ? (trimmedForm[key] as string).trim() : trimmedForm[key]
+    ) as T[typeof key]
+  }
+
+  return trimmedForm
+}
+
 export default function CreatePost() {
   const [formData, setFormData] = useState(initData)
 
@@ -17,7 +28,9 @@ export default function CreatePost() {
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const res = await addPost(formData).unwrap()
+    let trimmedForm = trimmedFormData(formData)
+
+    const res = await addPost(trimmedForm).unwrap()
     setFormData(initData)
     console.log('🚀 ~ file: CreatePost.tsx:21 ~ onSubmit ~ res:', res)
   }
@@ -26,7 +39,7 @@ export default function CreatePost() {
     let element = e.target
 
     if (element.type !== 'checkbox') {
-      setFormData((prv) => ({ ...prv, [element.name]: element.value.trim() })) // Not checkbox
+      setFormData((prv) => ({ ...prv, [element.name]: element.value })) // Not checkbox
     } else {
       setFormData((prv) => ({ ...prv, [element.name]: (element as HTMLInputElement).checked })) // Is checkbox
     }
