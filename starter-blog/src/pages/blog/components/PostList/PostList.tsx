@@ -1,10 +1,18 @@
-import { useGetPostsQuery } from 'service/blog.service'
+import { useGetPostsListQuery } from 'service/blog.service'
 import PostItem from '../PostItem'
 import SkeletonPost from '../SkeletonPost'
+import { useDispatch } from 'react-redux'
+import { startEditPost } from 'redux-toolkit/blog.slice'
 
 function PostList() {
-  const { data, isFetching } = useGetPostsQuery()
+  const { data, isFetching } = useGetPostsListQuery()
   // console.log('🚀 ~ file: PostList.tsx:6 ~ PostList ~ data:', data, isFetching)
+
+  const dispatch = useDispatch()
+
+  function startEdit(id: string) {
+    dispatch(startEditPost(id))
+  }
 
   return (
     <div className='bg-white py-6 sm:py-8 lg:py-12'>
@@ -21,22 +29,8 @@ function PostList() {
                 .fill(null)
                 .map((item, index) => <SkeletonPost key={index} />)
             : data && data?.length > 0
-            ? data?.map((item) => (
-                <PostItem
-                  key={item.id}
-                  id={item.id}
-                  description={item.description}
-                  featuredImage={item.featuredImage}
-                  publishDate={item.publishDate}
-                  title={item.title}
-                  published={item.published}
-                />
-              ))
+            ? data?.map((item) => <PostItem key={item.id} post={item} startEdit={startEdit} />)
             : 'No item'}
-          {/* <PostItem />
-          <PostItem />
-          <PostItem />
-          <PostItem /> */}
         </div>
       </div>
     </div>
