@@ -1,4 +1,4 @@
-import { useGetPostsListQuery } from 'service/blog.service'
+import { useDeletePostMutation, useGetPostsListQuery } from 'service/blog.service'
 import PostItem from '../PostItem'
 import SkeletonPost from '../SkeletonPost'
 import { useDispatch } from 'react-redux'
@@ -12,6 +12,12 @@ function PostList() {
 
   function startEdit(id: string) {
     dispatch(startEditPost(id))
+  }
+
+  // Delete post
+  const [deletePost] = useDeletePostMutation()
+  async function handleDeletePost(id: string) {
+    await deletePost(id)
   }
 
   return (
@@ -29,7 +35,9 @@ function PostList() {
                 .fill(null)
                 .map((item, index) => <SkeletonPost key={index} />)
             : data && data?.length > 0
-            ? data?.map((item) => <PostItem key={item.id} post={item} startEdit={startEdit} />)
+            ? data?.map((item) => (
+                <PostItem key={item.id} post={item} startEdit={startEdit} deletePost={handleDeletePost} />
+              ))
             : 'No item'}
         </div>
       </div>

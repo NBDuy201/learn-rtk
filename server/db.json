@@ -39,30 +39,6 @@
       "published": true,
       "title": "test 2",
       "id": "bDqHgZT"
-    },
-    {
-      "description": "d  dsd    ",
-      "featuredImage": "dsds ",
-      "publishDate": "2023-10-20T15:37",
-      "published": false,
-      "title": "Test 2",
-      "id": "AWYhXzG"
-    },
-    {
-      "description": "dsd",
-      "featuredImage": "ds",
-      "publishDate": "2023-10-07T15:38",
-      "published": false,
-      "title": "Test 3",
-      "id": "-4gamTD"
-    },
-    {
-      "description": "dsd sd sd s d\ndsd",
-      "featuredImage": "dsd dsd",
-      "publishDate": "2023-10-05T17:10",
-      "published": true,
-      "title": "Test 4",
-      "id": "l3LCmHX"
     }
   ]
 }

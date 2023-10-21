@@ -12,6 +12,7 @@ export const blogApi = createApi({
     getPostsList: builder.query<IPost[], void>({
       query: () => API_PATH.BLOG,
       // Refetch by tags
+      // If invalidatesTags match providesTags then refetch
       providesTags: (results) => {
         if (results) {
           const final = [
@@ -42,9 +43,22 @@ export const blogApi = createApi({
         method: 'PUT',
         body: data.body
       }),
-      invalidatesTags: (result, error, body) => [{ type: API_TAG_TYPES.BLOG, id: defBlogId }]
+      invalidatesTags: (result, error, data) => [{ type: API_TAG_TYPES.BLOG, id: data.id }]
+    }),
+    deletePost: builder.mutation<{}, string>({
+      query: (id) => ({
+        url: `${API_PATH.BLOG}/${id}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: (result, error, id) => [{ type: API_TAG_TYPES.BLOG, id }]
     })
   })
 })
 
-export const { useGetPostsListQuery, useAddPostsMutation, useGetPostQuery, useEditPostMutation } = blogApi
+export const {
+  useGetPostsListQuery,
+  useAddPostsMutation,
+  useGetPostQuery,
+  useEditPostMutation,
+  useDeletePostMutation
+} = blogApi
