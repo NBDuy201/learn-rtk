@@ -15,8 +15,10 @@ server.get("/echo", (req, res) => {
 // You can use the one used by JSON Server
 server.use(jsonServer.bodyParser);
 server.use((req, res, next) => {
+  console.log(req.method);
   if (["POST", "PUT", "PATCH"].includes(req.method)) {
     if (new Date(req.body.publishDate).getTime() < new Date().getTime()) {
+      console.log("day before");
       return res.status(422).send({
         error: {
           publishDate: "Không được publish vào thời điểm trong quá khứ",
@@ -31,7 +33,7 @@ server.use((req, res, next) => {
   }
   setTimeout(() => {
     next();
-  }, 3000);
+  }, 2000);
 });
 
 // Use default router

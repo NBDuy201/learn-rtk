@@ -1,9 +1,10 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { cancelEditPost } from 'redux-toolkit/blog.slice'
 import { RootState } from 'redux-toolkit/store'
 import { useAddPostsMutation, useEditPostMutation, useGetPostQuery } from 'service/blog.service'
 import { IPost } from 'types/blog.type'
+import { isEntityError } from 'utils/helper'
 
 const initData: Omit<IPost, 'id'> = {
   description: '',
@@ -12,6 +13,12 @@ const initData: Omit<IPost, 'id'> = {
   published: false,
   title: ''
 }
+
+type FormError =
+  | {
+      [key in keyof typeof initData]: string
+    }
+  | null
 
 function trimmedFormData<T>(obj: T) {
   let trimmedForm = { ...obj }
@@ -30,7 +37,7 @@ export default function CreatePost() {
   // Get editing post info
   const postId = useSelector((state: RootState) => state.blog.postId)
   const { data } = useGetPostQuery(postId, { skip: !postId })
-  const [updatePost] = useEditPostMutation()
+  const [updatePost, updatePostResult] = useEditPostMutation()
 
   // Reset post
   const dispatch = useDispatch()
@@ -40,7 +47,7 @@ export default function CreatePost() {
   }
 
   // Add new post
-  const [addPost] = useAddPostsMutation()
+  const [addPost, addPostResult] = useAddPostsMutation()
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -69,6 +76,16 @@ export default function CreatePost() {
       setFormData((prv) => ({ ...prv, [element.name]: (element as HTMLInputElement).checked })) // Is checkbox
     }
   }
+
+  // Error catching
+  const errForm: FormError = useMemo(() => {
+    const errRes = postId ? updatePostResult.error : addPostResult.error
+    if (isEntityError(errRes)) {
+      console.log('🚀 ~ file: CreatePost.tsx:84 ~ consterrForm:FormError=useMemo ~ errRes:', errRes)
+      return errRes.data.error as FormError
+    }
+    return null
+  }, [postId, updatePostResult, addPostResult])
 
   // Set form data when click on "Edit"
   useEffect(() => {
@@ -125,29 +142,37 @@ export default function CreatePost() {
         </div>
       </div>
       <div className='mb-6'>
-        <label htmlFor='publishDate' className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
+        <label
+          htmlFor='publishDate'
+          className={`mb-2 block text-sm font-medium
+        ${Boolean(errForm?.publishDate) ? 'text-red-500' : 'text-gray-900 dark:text-gray-300'}`}
+        >
           Publish Date
         </label>
         <input
           type='datetime-local'
           name='publishDate'
-          className='block w-56 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
+          className={`block w-56 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500
+          ${Boolean(errForm?.publishDate) ? 'border-red-500 bg-red-50' : ''}`}
           placeholder='publishDate'
           required
           onChange={onFieldChange}
           value={formData.publishDate}
         />
+        {Boolean(errForm?.publishDate) ? (
+          <p className='mt-2 text-sm text-red-500'>Lỗi không publish được vào thời điểm trong quá khứ</p>
+        ) : null}
       </div>
       <div className='mb-6 flex items-center'>
         <input
           id='published'
           name='published'
           type='checkbox'
-          className='h-4 w-4 focus:ring-2 focus:ring-blue-500'
+          className={`h-4 w-4 focus:ring-2 focus:ring-blue-500`}
           onChange={onFieldChange}
           checked={formData.published}
         />
-        <label htmlFor='published' className='ml-2 text-sm font-medium text-gray-900'>
+        <label htmlFor='published' className={`ml-2 text-sm font-medium text-gray-900`}>
           Publish
         </label>
       </div>
