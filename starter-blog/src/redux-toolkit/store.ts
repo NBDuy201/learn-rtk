@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import blogReducer from './blog.slice'
 import { blogApi } from 'service/blog.service'
 import { setupListeners } from '@reduxjs/toolkit/dist/query'
+import { rtkQueryErrorLogger } from './middleware'
 
 export const store = configureStore({
   reducer: {
@@ -10,7 +11,7 @@ export const store = configureStore({
   },
 
   // Add api middleware for caching, invalidation
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(blogApi.middleware)
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(blogApi.middleware, rtkQueryErrorLogger)
 })
 
 // refetchOnFocus
